@@ -1,0 +1,21 @@
+/* INDEX.CSS */
+.container {
+  text-align: center;
+}
+
+.container h2 {
+  margin-bottom: 20px;
+  font-size: 1.8rem;
+  color: var(--accent);
+}
+
+.container p {
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.container .btn {
+  display: inline-block;
+  text-decoration: none;
+}

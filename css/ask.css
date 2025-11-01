@@ -1,0 +1,159 @@
+/* ===== WHO? | Estilo para página de perguntas ===== */
+
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Tema escuro */
+body {
+  background-color: #0f0f0f;
+  color: #f5f5f5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Header ===== */
+header {
+  width: 100%;
+  background-color: #161616;
+  padding: 15px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #222;
+}
+
+header .brand {
+  font-size: 1.5rem;
+  color: #a066ff;
+  font-weight: bold;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+header .brand:hover {
+  color: #c49eff;
+}
+
+header nav a {
+  color: #dcdcdc;
+  text-decoration: none;
+  margin-left: 25px;
+  font-size: 0.95rem;
+  transition: 0.3s;
+}
+
+header nav a:hover {
+  color: #a066ff;
+}
+
+/* ===== Container ===== */
+main {
+  flex: 1;
+  padding: 60px 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* ===== Formulário ===== */
+form {
+  background-color: #1b1b1b;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(160, 102, 255, 0.1);
+}
+
+label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 6px;
+  color: #ccc;
+}
+
+input[type="text"],
+textarea {
+  width: 100%;
+  padding: 12px;
+  background: #121212;
+  color: #fff;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  transition: 0.3s;
+}
+
+input[type="text"]:focus,
+textarea:focus {
+  border-color: #a066ff;
+  outline: none;
+}
+
+/* ===== Botão ===== */
+button,
+input[type="submit"] {
+  background: #a066ff;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: 600;
+}
+
+button:hover,
+input[type="submit"]:hover {
+  background: #b684ff;
+}
+
+/* ===== Footer ===== */
+footer {
+  background-color: #161616;
+  padding: 15px;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #777;
+  border-top: 1px solid #222;
+}
+
+footer a {
+  color: #a066ff;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* ===== Responsividade ===== */
+@media (max-width: 600px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  header nav a {
+    margin: 10px 0 0 0;
+  }
+
+  main {
+    padding: 40px 15px;
+  }
+
+  form {
+    padding: 20px;
+  }
+}

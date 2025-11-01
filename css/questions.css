@@ -1,0 +1,24 @@
+/* QUESTIONS.CSS */
+.question {
+  background: #121212;
+  border: 1px solid var(--border);
+  padding: 20px;
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+}
+
+.question h3 {
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.question p {
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.question .meta {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 10px;
+}

@@ -1,0 +1,25 @@
+/* LOGIN.CSS */
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+form h2 {
+  color: var(--accent);
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+form label {
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+form input {
+  margin-bottom: 20px;
+}
+
+form button {
+  margin-top: 10px;
+}
