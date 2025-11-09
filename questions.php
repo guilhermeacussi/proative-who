@@ -40,114 +40,120 @@ $pergunta = $result->fetch_assoc();
   </script>
 
   <style>
-    body {
-      background-color: #0b0b0b;
-      color: #fff;
-      font-family: "Inter", sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-    }
+ :root {
+  --primary-bg: #0e0e0e; 
+  --secondary-bg: #1c1c1c; 
+  --accent-color: #b96cff; 
+  --text-color: #fff;
+  --text-muted: #aaa;
+  --border-color: #2f2f2f;
+  --input-bg: #121212;
+}
 
-    header {
-      width: 100%;
-      padding: 20px 0;
-      background: #0f0f0f;
-      text-align: center;
-      box-shadow: 0 0 15px rgba(128, 0, 255, 0.2);
-    }
 
-    header h1 {
-      color: #b980ff;
-      font-size: 1.8rem;
-      margin: 0;
-    }
+body {
+    background: var(--primary-bg);
+    color: var(--text-color);
+    margin: 0;
+    font-family: 'Libre Franklin', sans-serif; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
 
-    .container {
-      max-width: 800px;
-      width: 90%;
-      background: #121212;
-      border-radius: 16px;
-      box-shadow: 0 0 25px rgba(128, 0, 255, 0.15);
-      padding: 30px;
-      margin: 40px auto;
-      transition: 0.3s ease;
-    }
+main.container {
+    background: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px; 
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); 
+}
 
-    .container:hover {
-      box-shadow: 0 0 40px rgba(128, 0, 255, 0.25);
-    }
+.container h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.8rem;
+    color: var(--accent-color);
+    font-weight: 700;
+}
 
-    h2 {
-      color: #b980ff;
-      font-size: 2rem;
-      margin-bottom: 10px;
-    }
+form {
+    display: flex;
+    flex-direction: column;
+}
 
-    .meta {
-      color: #aaa;
-      font-size: 0.9rem;
-      margin-bottom: 20px;
-    }
+label {
+    font-size: 0.95rem;
+    color: var(--text-color);
+    margin-bottom: 8px;
+    margin-top: 15px;
+    font-weight: 600;
+}
 
-    .content {
-      line-height: 1.7;
-      color: #ddd;
-      background: #1a1a1a;
-      padding: 20px;
-      border-radius: 10px;
-      border: 1px solid #2b2b2b;
-      margin-bottom: 25px;
-    }
+input[type="email"],
+input[type="password"],
+input[name="nome"]{
+    width: 93%;
+    padding: 12px;
+    background: var(--input-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    transition: 0.3s;
+}
 
-    .btn {
-      background-color: #b980ff;
-      color: #fff;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[name="nome"]:focus{
+    border-color: var(--accent-color);
+    box-shadow: 0 0 5px rgba(185, 108, 255, 0.5);
+    outline: none;
+}
 
-    .btn:hover {
-      background-color: #9d63ff;
-    }
+.btn {
+    background: var(--accent-color);
+    color: var(--text-color);
+    border: none;
+    padding: 12px;
+    border-radius: 25px; 
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-top: 30px;
+    transition: background 0.3s, transform 0.1s;
+}
 
-    #responder-container {
-      display: none;
-      margin-top: 20px;
-      animation: fadeIn 0.4s ease-in-out;
-    }
+.btn:hover {
+    background: #a34de7; 
+    transform: translateY(-1px); 
+}
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+.container p {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
 
-    footer {
-      margin-top: auto;
-      text-align: center;
-      padding: 20px;
-      color: #777;
-      border-top: 1px solid #222;
-      width: 100%;
-    }
+.container p a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+}
 
-    @media (max-width: 600px) {
-      .container {
-        padding: 20px;
-      }
-      h2 {
-        font-size: 1.6rem;
-      }
-      .btn {
-        width: 100%;
-      }
-    }
+.container p a:hover {
+    color: #c49eff;
+    text-decoration: underline;
+}
+
+
   </style>
 </head>
 <body>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>403 - Acesso proibido</title>
+  <style>
+    body {
+      background: #0e0e0e;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+    header.topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1c1c1c;
+      padding: 15px 30px;
+      border-bottom: 2px solid #b96cff;
+    }
+    header.topbar .brand {
+      font-weight: bold;
+      font-size: 1.4em;
+      color: #b96cff;
+      letter-spacing: 2px;
+      text-decoration: none;
+      text-transform: uppercase;
+    }
+    main.container {
+      max-width: 500px;
+      margin: 70px auto;
+      background: #1c1c1c;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 18px rgba(185,108,255,0.10);
+      text-align: center;
+    }
+    .error-code {
+      font-size: 4.5em;
+      color: #b96cff;
+      font-weight: bold;
+      margin-bottom: 16px;
+      margin-top: 14px;
+      letter-spacing: 4px;
+    }
+    .error-title {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+    .error-msg {
+      color: #ccc;
+      font-size: 1.18em;
+      margin-bottom: 25px;
+    }
+    a.btn {
+      display: inline-block;
+      background: #b96cff;
+      color: #fff;
+      border-radius: 6px;
+      padding: 12px 28px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.1em;
+      margin-top: 12px;
+      transition: background 0.3s;
+    }
+    a.btn:hover {
+      background: #a34de7;
+    }
+  </style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="/">Who?</a>
+</header>
+<main class="container">
+  <div class="error-code">403</div>
+  <div class="error-title">Acesso proibido</div>
+  <div class="error-msg">Você não tem permissão para acessar esta página ou recurso.</div>
+  <a class="btn" href="/">Voltar para a Home</a>
+</main>
+</body>
+</html>

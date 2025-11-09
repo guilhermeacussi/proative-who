@@ -1,41 +1,43 @@
 <?php
 require __DIR__ . '/../init.php';
 
-// Inicia sessão (caso ainda não tenha sido iniciada)
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Garante que a requisição é POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     die('Método inválido');
 }
 
-// Captura e valida os dados do formulário
-$email = trim($_POST['email'] ?? '');
+$userInput = trim($_POST['user'] ?? '');
 $senha = $_POST['senha'] ?? '';
 
-if (!$email || !$senha) {
+if (empty($userInput) || empty($senha)) {
     $_SESSION['error'] = 'Preencha todos os campos';
     header('Location: /../../login.php');
     exit;
 }
 
-// Busca usuário no banco
-$stmt = $pdo->prepare('SELECT id, senha FROM users WHERE email = ? LIMIT 1');
-$stmt->execute([$email]);
+// Detecta se o campo é email ou nome de usuário
+if (filter_var($userInput, FILTER_VALIDATE_EMAIL)) {
+    $query = 'SELECT id, senha FROM users WHERE email = ? LIMIT 1';
+} else {
+    $query = 'SELECT id, senha FROM users WHERE nome = ? LIMIT 1';
+}
+
+$stmt = $pdo->prepare($query);
+$stmt->execute([$userInput]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Verifica credenciais
 if (!$user || !password_verify($senha, $user['senha'])) {
-    $_SESSION['error'] = 'Email ou senha incorretos';
+    $_SESSION['error'] = 'Usuário ou senha incorretos';
     header('Location: /../../login.php');
     exit;
 }
 
-// Login bem-sucedido → grava sessão
+// Login bem-sucedido
 $_SESSION['user_id'] = $user['id'];
 
-// Redireciona para a home
 header('Location: /../../index.php');
 exit;
+?>

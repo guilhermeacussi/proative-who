@@ -1,23 +1,28 @@
-/* REGISTER.CSS */
+/* REGISTER.CSS minimalista */
 form {
   display: flex;
   flex-direction: column;
+  background: var(--card-bg);
+  padding: 28px 20px;
+  border-radius: var(--radius);
+  box-shadow: 0 0 10px rgba(160,102,255,0.05);
+  max-width: 380px;
+  margin: 45px auto 0;
 }
 
 form h2 {
   color: var(--accent);
   text-align: center;
-  margin-bottom: 25px;
+  margin-bottom: 27px;
 }
 
 form label {
-  margin-bottom: 5px;
-  font-size: 0.9rem;
-  color: var(--text-muted);
+  margin-bottom: 6px;
+  font-size: 0.98rem;
 }
 
 form input {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 form button {
