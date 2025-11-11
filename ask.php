@@ -1,263 +1,378 @@
 <?php
-require_once 'src/config.php';
-session_start();
+require __DIR__ . '/src/init.php';
+$me = current_user($pdo);
 
 // Verifica se o usuário está logado
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../../login.php");
+if (empty($me)) {
+    header("Location: login.php");
     exit;
 }
 ?>
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Fazer Pergunta - Who?</title>
-	<link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="shortcut icon" href="icons/index.png">
+    
     <!-- Quill -->
     <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
     <script src="https://cdn.quilljs.com/1.3.7/quill.js"></script>
-<style>
-/* ===== WHO? | Estilo aprimorado para página de perguntas ===== */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    <style>
+        :root {
+            --primary-bg: #0e0e0e; 
+            --secondary-bg: #1c1c1c;
+            --accent-color: #b96cff;
+            --text-color: #fff;
+            --text-muted: #aaa;
+            --border-color: #2f2f2f;
+        }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
-}
+        /* --- GERAL --- */
+        body {
+          background: var(--primary-bg);
+          color: var(--text-color);
+          margin: 0;
+          font-family: "Libre Franklin", sans-serif;
+        }
 
-/* ===== Corpo ===== */
-body {
-  background: radial-gradient(circle at top, #1b002f, #0a0a0a 60%);
-  color: #f5f5f5;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-}
+        .main-container {
+          display: flex;
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 0 15px;
+          gap: 30px;
+        }
 
-/* ===== Header ===== */
-header {
-  width: 100%;
-  background: rgba(20, 20, 20, 0.85);
-  backdrop-filter: blur(8px);
-  padding: 15px 40px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid rgba(160, 102, 255, 0.2);
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
+        /* --- TOPO --- */
+        header.topbar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: var(--secondary-bg);
+          padding: 15px 30px;
+          border-bottom: 1px solid var(--border-color);
+          position: sticky;
+          top: 0;
+          z-index: 10;
+        }
 
-header .brand {
-  font-size: 1.7rem;
-  color: #a066ff;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  text-decoration: none;
-  transition: 0.3s ease;
-}
+        header.topbar a {
+          color: var(--accent-color);
+          font-weight: 600;
+          text-decoration: none;
+          margin-left: 15px;
+          transition: color 0.2s;
+        }
 
-header .brand:hover {
-  color: #c49eff;
-  text-shadow: 0 0 8px rgba(196, 158, 255, 0.5);
-}
+        header.topbar a:hover {
+          color: #a34de7;
+        }
 
-header nav a {
-  color: #dcdcdc;
-  text-decoration: none;
-  margin-left: 25px;
-  font-size: 0.95rem;
-  transition: 0.3s ease;
-}
+        /* --- SIDEBAR --- */
+        .sidebar {
+          width: 300px;
+          padding-top: 20px;
+          position: sticky;
+          top: 60px;
+          height: auto;
+          height: fit-content;
+        }
 
-header nav a:hover {
-  color: #a066ff;
-  text-shadow: 0 0 6px rgba(160, 102, 255, 0.4);
-}
+        .trending-box, .follow-suggestions {
+          background: var(--secondary-bg);
+          border-radius: 10px;
+          padding: 15px;
+          margin-bottom: 20px;
+        }
 
-/* ===== Container Principal ===== */
-main {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  padding: 60px 15px;
-}
+        .sidebar h3 {
+          margin-top: 0;
+          font-size: 1.2rem;
+          color: var(--text-color);
+          border-bottom: 1px solid var(--border-color);
+          padding-bottom: 10px;
+          margin-bottom: 10px;
+          font-weight: 700;
+        }
 
-.form-container {
-  background: linear-gradient(145deg, #131313, #0f0f0f);
-  border: 1px solid rgba(160, 102, 255, 0.15);
-  border-radius: 16px;
-  padding: 40px;
-  width: 100%;
-  max-width: 600px;
-  box-shadow: 0 0 25px rgba(160, 102, 255, 0.1);
-  transition: 0.4s ease;
-}
+        .trending-item {
+          display: block;
+          text-decoration: none;
+          color: var(--text-color);
+          padding: 10px 0;
+        }
 
-.form-container:hover {
-  box-shadow: 0 0 30px rgba(160, 102, 255, 0.25);
-}
+        .trending-item:hover {
+          background-color: #252525;
+        }
 
-/* ===== Título ===== */
-.form-container h1 {
-  text-align: center;
-  margin-bottom: 30px;
-  color: #fff;
-  font-weight: 700;
-  font-size: 1.8rem;
-  text-shadow: 0 0 12px rgba(160, 102, 255, 0.3);
-}
+        .trending-item .topic {
+          font-weight: 700;
+          display: block;
+        }
 
-/* ===== Campos ===== */
-label {
-  display: block;
-  font-size: 0.9rem;
-  margin-bottom: 6px;
-  color: #ccc;
-}
+        .trending-item .category, .trending-item .count {
+          font-size: 0.8em;
+          color: var(--text-muted);
+        }
 
-input[type="text"],
-textarea {
-  width: 100%;
-  padding: 12px 14px;
-  background: #121212;
-  color: #fff;
-  border: 1px solid #2a2a2a;
-  border-radius: 8px;
-  margin-bottom: 20px;
-  font-size: 0.95rem;
-  transition: 0.3s ease;
-}
+        /* --- FEED --- */
+        .feed-content {
+          flex-grow: 1;
+          max-width: 600px;
+          border-left: 1px solid var(--border-color);
+          border-right: 1px solid var(--border-color);
+          min-height: 100vh;
+        }
 
-input[type="text"]:focus,
-textarea:focus {
-  border-color: #a066ff;
-  box-shadow: 0 0 6px rgba(160, 102, 255, 0.4);
-  outline: none;
-}
+        .feed-content h2 {
+          font-size: 1.3rem;
+          padding: 15px 20px;
+          margin: 0;
+          border-bottom: 1px solid var(--border-color);
+          font-weight: 700;
+        }
 
-/* ===== Botão ===== */
-button,
-input[type="submit"] {
-  width: 100%;
-  background: linear-gradient(90deg, #a066ff, #7c4dff);
-  color: white;
-  border: none;
-  padding: 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.4px;
-  transition: 0.3s ease;
-  box-shadow: 0 0 10px rgba(160, 102, 255, 0.25);
-}
+        /* --- FORMULÁRIO DE PERGUNTA --- */
+        .ask-form {
+          padding: 15px 20px;
+          border-bottom: 1px solid var(--border-color);
+          background: var(--primary-bg);
+        }
 
-button:hover,
-input[type="submit"]:hover {
-  background: linear-gradient(90deg, #b67cff, #9b4dff);
-  box-shadow: 0 0 20px rgba(182, 124, 255, 0.35);
-  transform: translateY(-1px);
-}
+        .ask-form label {
+          display: block;
+          font-size: 0.9rem;
+          margin-bottom: 6px;
+          color: var(--text-color);
+        }
 
-/* ===== Footer ===== */
-footer {
-  background-color: #0f0f0f;
-  padding: 20px;
-  text-align: center;
-  font-size: 0.9rem;
-  color: #999;
-  border-top: 1px solid rgba(160, 102, 255, 0.15);
-  margin-top: auto;
-}
+        .ask-form input[type="text"] {
+          width: 100%;
+          padding: 12px 14px;
+          background: var(--secondary-bg);
+          color: var(--text-color);
+          border: 1px solid var(--border-color);
+          border-radius: 6px;
+          margin-bottom: 20px;
+          font-size: 1rem;
+          transition: 0.3s;
+          box-sizing: border-box; /* Evita overflow */
+        }
 
-footer a {
-  color: #a066ff;
-  text-decoration: none;
-}
+        .ask-form input[type="text"]:focus {
+          border-color: var(--accent-color);
+          box-shadow: 0 0 5px rgba(185, 108, 255, 0.5);
+          outline: none;
+        }
 
-footer a:hover {
-  text-decoration: underline;
-}
+        /* Estilos para o editor Quill */
+        .ask-form #editor {
+          margin-bottom: 20px;
+          border: 1px solid var(--border-color);
+          border-radius: 6px;
+          background: var(--secondary-bg);
+          color: var(--text-color);
+          min-height: 200px; /* Altura mínima para melhor visualização */
+        }
 
-/* ===== Responsividade ===== */
-@media (max-width: 768px) {
-  header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+        .ask-form #editor .ql-toolbar {
+          border: none;
+          border-bottom: 1px solid var(--border-color);
+          background: var(--primary-bg);
+        }
 
-  header nav a {
-    margin: 10px 10px 0 0;
-  }
+        .ask-form #editor .ql-container {
+          border: none;
+          font-size: 1rem;
+          line-height: 1.5;
+        }
 
-  .form-container {
-    padding: 25px;
-  }
+        .ask-form #editor .ql-editor {
+          padding: 12px 14px;
+          color: var(--text-color);
+        }
 
-  .form-container h1 {
-    font-size: 1.5rem;
-  }
-}
+        .ask-form #editor .ql-editor.ql-blank::before {
+          color: var(--text-muted);
+        }
 
+        /* --- BOTÕES --- */
+        .btn {
+          display: inline-block;
+          padding: 8px 15px;
+          background: none;
+          border: 1px solid var(--accent-color);
+          color: var(--accent-color);
+          border-radius: 20px;
+          text-decoration: none;
+          transition: 0.3s;
+          font-weight: 600;
+          cursor: pointer;
+        }
 
+        .btn-primary {
+          background: var(--accent-color);
+          color: var(--text-color);
+          border: 1px solid var(--accent-color);
+        }
+
+        .btn:hover { 
+          background: #a34de740;
+          color: #a34de7;
+        }
+
+        .btn-primary:hover { 
+          background: #a34de7; 
+        }
+
+        /* --- MOBILE NAV --- */
+        .mobile-nav-bar {
+          display: none;
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          background: var(--secondary-bg);
+          border-top: 1px solid var(--border-color);
+          justify-content: space-around;
+          padding: 10px 0;
+          z-index: 20;
+        }
+
+        .mobile-nav-bar a {
+          color: var(--text-muted);
+          font-size: 1.5rem;
+          text-decoration: none;
+        }
+
+        .mobile-nav-bar a.active {
+          color: var(--accent-color);
+        }
+
+        /* --- RESPONSIVO --- */
+        @media (max-width: 992px) {
+          .sidebar {
+            display: none;
+          }
+
+          .feed-content {
+            max-width: 100%;
+            border-left: none;
+            border-right: none;
+          }
+
+          .main-container {
+            padding: 0;
+          }
+
+          header.topbar {
+            padding: 10px 15px;
+          }
+
+          .mobile-nav-bar {
+            display: flex;
+          }
+        }
     </style>
-    
 </head>
+
 <body>
-    <div class="container">
-       
+<header class="topbar">
+    <a class="brand" href="index.php">Who?</a>
+    <nav>
+        <a href="ask.php">Fazer pergunta</a> 
+        <a href="profile.php">Meu perfil</a>
+        <a href="/src/actions/logout.php">Sair</a>
+    </nav>
+</header>
+
+<main class="main-layout main-container">
+    <aside class="sidebar">
+        <div class="trending-box">
+            <h3>O que está acontecendo</h3>
+            <div class="trending-list">
+                <a href="#" class="trending-item">
+                    <span class="category">Vírginia e Vini Jr.</span>
+                    <span class="topic">#VirginiaTrazOHexa</span>
+                    <span class="count">2.5k Perguntas</span>
+                </a>
+                <a href="#" class="trending-item">
+                    <span class="category">OR3</span>
+                    <span class="topic">#OliviaLançaLogo</span>
+                    <span class="count">12.2k Perguntas</span>
+                </a>
+            </div>
+        </div>
+        
+        <div class="follow-suggestions">
+            <h3>Quem seguir</h3>
+            <div class="suggestion-item">
+                <span class="username">@mluizasousx</span>
+                <button class="btn btn-follow">Seguir</button>
+            </div>
+        </div>
+    </aside>
+
+    <div class="feed-content">
         <h2>Fazer uma Pergunta</h2>
-<br>
-        <form id="askForm" action="src/actions/ask_process.php" method="POST">
-            <label for="titulo">Título da Pergunta:</label>
-            <input type="text" id="titulo" name="titulo" required placeholder="Digite o título da sua pergunta...">
+        
+        <section class="ask-form">
+            <form id="askForm" action="src/actions/ask_process.php" method="POST">
+                <label for="titulo">Título da Pergunta:</label>
+                <input type="text" id="titulo" name="titulo" required placeholder="Digite o título da sua pergunta...">
 
-            <label for="conteudo">Conteúdo da Pergunta:</label>
-            <div id="editor"></div>
+                <label for="conteudo">Conteúdo da Pergunta:</label>
+                <div id="editor"></div>
 
-            <!-- Campo oculto que vai receber o conteúdo do Quill -->
-            <input type="hidden" name="conteudo" id="conteudo">
+                <!-- Campo oculto que vai receber o conteúdo do Quill -->
+                <input type="hidden" name="conteudo" id="conteudo">
 
-            <br>
-            
-            <button type="submit">Publicar Pergunta</button>
-        </form>
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Publicar Pergunta</button>
+            </form>
+        </section>
     </div>
+</main>
 
-    <script>
-        // Inicializa o Quill
-        const quill = new Quill('#editor', {
-            theme: 'snow',
-            placeholder: 'Escreva sua pergunta aqui...',
-            modules: {
-                toolbar: [
-                    ['bold', 'italic', 'underline'],
-                    [{ 'header': 1 }, { 'header': 2 }],
-                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                    ['link', 'image'],
-                    [{ 'align': [] }], // dropdown de alinhamento
-                    ['clean']
-                ]
-            }
-        });
+<nav class="mobile-nav-bar">
+    <a href="index.php"><i class="fas fa-home"></i></a>
+    <a href="explore.php"><i class="fas fa-search"></i></a>
+    <a href="notifications.php"><i class="fas fa-bell"></i></a>
+    <a href="messages.php"><i class="fas fa-envelope"></i></a>
+</nav>
 
-        // Sincroniza Quill com o campo hidden antes do submit
-        const form = document.getElementById('askForm');
-        form.addEventListener('submit', function(e) {
-            document.getElementById('conteudo').value = quill.root.innerHTML;
-        });
-    </script>
+<script>
+    // Inicializa o Quill
+    const quill = new Quill('#editor', {
+        theme: 'snow',
+        placeholder: 'Escreva sua pergunta aqui...',
+        modules: {
+            toolbar: [
+                ['bold', 'italic', 'underline'],
+                [{ 'header': 1 }, { 'header': 2 }],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['link', 'image'],
+                [{ 'align': [] }], // dropdown de alinhamento
+                ['clean']
+            ]
+        }
+    });
+
+    // Sincroniza Quill com o campo hidden antes do submit
+    const form = document.getElementById('askForm');
+    form.addEventListener('submit', function(e) {
+        document.getElementById('conteudo').value = quill.root.innerHTML;
+    });
+</script>
+
 </body>
 </html>

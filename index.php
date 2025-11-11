@@ -8,7 +8,7 @@ if (!$pdo) {
     die('Erro: Conexão com banco de dados falhou.');
 }
 
-// Pega as últimas perguntas com autor, avatar, username, likes_count e ID
+// Pega as últimas perguntas com autor, avatar, username, likes_count, respostas_count e ID
 try {
     $stmt = $pdo->query('
         SELECT 
@@ -17,6 +17,7 @@ try {
             q.conteudo, 
             q.created_at, 
             COALESCE(q.likes_count, 0) AS likes_count,
+            (SELECT COUNT(*) FROM answers a WHERE a.question_id = q.id) AS respostas_count,
             u.id AS autor_id, 
             u.nome AS autor, 
             u.avatar AS autor_avatar
@@ -35,6 +36,15 @@ try {
     $questions = [];
     error_log('Erro na query: ' . $e->getMessage());
     $error_message = 'Erro ao carregar perguntas: ' . $e->getMessage();  // Exibe no HTML
+}
+
+// Busca usuários para a lista (Sidebar)
+try {
+    $stmt_users = $pdo->query('SELECT id, nome, avatar FROM users ORDER BY id DESC LIMIT 10');
+    $users = $stmt_users->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $users = [];
+    error_log('Erro ao buscar usuários: ' . $e->getMessage());
 }
 ?>
 <!doctype html>
@@ -148,6 +158,42 @@ header.topbar a:hover {
 .trending-item .category, .trending-item .count {
   font-size: 0.8em;
   color: var(--text-muted);
+}
+
+/* Usuários listados 1 por 1, um embaixo do outro */
+.users-list-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.user-item {
+  display: flex;
+  align-items: center;
+  padding: 7px 0;
+  text-decoration: none;
+  color: var(--text-color);
+  border-radius: 7px;
+  transition: background 0.2s;
+}
+
+.user-item:hover {
+  background-color: #252525;
+}
+
+.user-item .avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 11px;
+  background-color: var(--accent-color);
+  border: 2px solid #353535;
+}
+
+.user-item .user-name {
+  font-weight: 600;
+  font-size: 1em;
 }
 
 /* --- FEED --- */
@@ -392,26 +438,46 @@ header.topbar a:hover {
 <main class="main-layout main-container">
     <aside class="sidebar">
         <div class="trending-box">
-            <h3>O que está acontecendo</h3>
+            <h3>Regras do Site</h3>
             <div class="trending-list">
-                <a href="#" class="trending-item">
-                    <span class="category">Vírginia e Vini Jr.</span>
-                    <span class="topic">#VirginiaTrazOHexa</span>
-                    <span class="count">2.5k Perguntas</span>
-                </a>
-                <a href="#" class="trending-item">
-                    <span class="category">OR3</span>
-                    <span class="topic">#OliviaLançaLogo</span>
-                    <span class="count">12.2k Perguntas</span>
-                </a>
+                <div class="trending-item">
+                    <span class="topic">1. Respeite os outros usuários</span>
+                    <span class="category">Não poste conteúdo ofensivo ou discriminatório.</span>
+                </div>
+                <div class="trending-item">
+                    <span class="topic">2. Seja relevante</span>
+                    <span class="category">Perguntas devem ser claras e relacionadas ao tema.</span>
+                </div>
+                <div class="trending-item">
+                    <span class="topic">3. Não spam</span>
+                    <span class="category">Evite postagens repetitivas ou irrelevantes.</span>
+                </div>
+                <div class="trending-item">
+                    <span class="topic">4. Privacidade</span>
+                    <span class="category">Não compartilhe informações pessoais sem consentimento.</span>
+                </div>
+                <div class="trending-item">
+                    <span class="topic">5. Moderação</span>
+                    <span class="category">Violadores das regras podem ser banidos.</span>
+                </div>
             </div>
         </div>
         
         <div class="follow-suggestions">
-            <h3>Quem seguir</h3>
-            <div class="suggestion-item">
-                <span class="username">@mluizasousx</span>
-                <button class="btn btn-follow">Seguir</button>
+            <h3>Usuários</h3>
+            <div class="users-list-content">
+                <?php if (!empty($users)): ?>
+                    <?php foreach ($users as $user): ?>
+                        <a href="profile.php?id=<?= htmlspecialchars($user['id']) ?>" class="user-item">
+                            <img src="uploads/avatars/<?= htmlspecialchars($user['avatar'] ?? 'default.png') ?>" 
+                                 alt="Avatar de <?= htmlspecialchars($user['nome']) ?>" 
+                                 class="avatar" onerror="this.src='uploads/avatars/default.png'">
+                            <span class="user-name"><?= htmlspecialchars($user['nome']) ?></span>
+                        </a>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p style="color: var(--text-muted); padding: 10px 0;">Nenhum usuário encontrado.</p>
+                <?php endif; ?>
             </div>
         </div>
     </aside>
@@ -450,16 +516,16 @@ header.topbar a:hover {
 					<div class="post-body"><?= nl2br(trim(strip_tags($q['conteudo']))) ?></div>
                     
                     <div class="post-interactions">
-                        <a href="question.php?id=<?= htmlspecialchars($q['id']) ?>" 
+                        <a href="questions.php?id=<?= htmlspecialchars($q['id']) ?>" 
                            class="interaction-btn comment-count" 
                            title="Ver Respostas">
-                            <i class="far fa-comment"></i> <?= htmlspecialchars($q['respostas_count'] ?? 0) ?>
+                            <i class="far fa-comment"></i> <?= htmlspecialchars($q['respostas_count']) ?>
                         </a>
                         <button class="interaction-btn" title="Repostar"><i class="fas fa-retweet"></i></button>
                         <button class="interaction-btn like-btn" title="Curtir" data-liked="false">
                             <i class="far fa-heart"></i> <span class="like-count"><?= htmlspecialchars($q['likes_count']) ?></span>
                         </button>
-                        <button class="interaction-btn share-btn" title="Compartilhar" data-link="question.php?id=<?= htmlspecialchars($q['id']) ?>">
+                        <button class="interaction-btn share-btn" title="Compartilhar" data-link="questions.php?id=<?= htmlspecialchars($q['id']) ?>">
                             <i class="fas fa-share-alt"></i>
                         </button>
                     </div>
@@ -516,20 +582,6 @@ document.querySelectorAll('.like-btn').forEach(btn => {
         }
     });
 });
-
-// Função de compartilhar (copiar link)
-document.querySelectorAll('.share-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const link = window.location.origin + '/' + btn.dataset.link;
-        navigator.clipboard.writeText(link).then(() => {
-            alert('Link copiado para a área de transferência!');
-        }).catch(err => {
-            console.error('Erro ao copiar:', err);
-            alert('Erro ao copiar o link.');
-        });
-    });
-});
-</script>
-
-</body>
-</html>
+ 
+    
+   </html>
