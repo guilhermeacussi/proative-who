@@ -4,13 +4,13 @@ return [
 
     'db' => [
 
-        'host' => 'sql307.infinityfree.com',
+        'host' => 'localhost',
 
-        'name' => 'if0_40268296_who',
+        'name' => 'who_db',
 
-        'user' => 'if0_40268296',
+        'user' => 'acussi',
 
-        'pass' => 'Gui10dav1',
+        'pass' => 'Ghost123',
 
         'charset' => 'utf8'
 
