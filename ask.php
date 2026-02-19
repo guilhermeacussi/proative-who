@@ -283,44 +283,110 @@ if (empty($me)) {
             display: flex;
           }
         }
+        
+        .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background: #000;
+    color: #fff;
+}
+
+.hamburger-menu {
+    background: none;
+    border: none;
+    font-size: 26px;
+    color: #fff;
+    cursor: pointer;
+    display: none; /* aparece no mobile */
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .hamburger-menu {
+        display: block;
+    }
+
+    .nav-links {
+        position: absolute;
+        top: 60px;
+        right: 0;
+        background: #000;
+        flex-direction: column;
+        width: 200px;
+        padding: 15px;
+        display: none;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
+}
+
     </style>
 </head>
 
 <body>
 <header class="topbar">
     <a class="brand" href="index.php">Who?</a>
-    <nav>
-        <a href="ask.php">Fazer pergunta</a> 
+
+    <button class="hamburger-menu" id="hamburger-btn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <nav class="nav-links" id="nav-menu">
+        <a href="index.php">Inicio</a>
+        <a href="users.php">Descobrir</a>
         <a href="profile.php">Meu perfil</a>
         <a href="/src/actions/logout.php">Sair</a>
     </nav>
 </header>
 
+
 <main class="main-layout main-container">
     <aside class="sidebar">
         <div class="trending-box">
-            <h3>O que está acontecendo</h3>
-            <div class="trending-list">
-                <a href="#" class="trending-item">
-                    <span class="category">Vírginia e Vini Jr.</span>
-                    <span class="topic">#VirginiaTrazOHexa</span>
-                    <span class="count">2.5k Perguntas</span>
-                </a>
-                <a href="#" class="trending-item">
-                    <span class="category">OR3</span>
-                    <span class="topic">#OliviaLançaLogo</span>
-                    <span class="count">12.2k Perguntas</span>
-                </a>
+            <main class="main-layout main-container">
+    <aside class="sidebar">
+        <div class="trending-box">
+            <h3>Regras do Site</h3>
+                            <div class="trending-item">
+
+                    <span class="topic">1. Respeite os outros usuários</span>
+                    <span class="category">Não poste conteúdo ofensivo ou discriminatório.</span>
+                </div>
+                <div class="trending-item">
+                    <span class="topic">2. Seja relevante</span>
+                    <span class="category">Perguntas devem ser claras e relacionadas ao tema.</span>
+                </div>
+                <div class="trending-item">
+                    <span class="topic">3. Não spam</span>
+                    <span class="category">Evite postagens repetitivas ou irrelevantes.</span>
+                </div>
+                <div class="trending-item">
+                    <span class="topic">4. Privacidade</span>
+                    <span class="category">Não compartilhe informações pessoais sem consentimento.</span>
+                </div>
+                <div class="trending-item">
+                    <span class="topic">5. Moderação</span>
+                    <span class="category">Violadores das regras podem ser banidos.</span>
+        </div>
             </div>
         </div>
         
-        <div class="follow-suggestions">
-            <h3>Quem seguir</h3>
-            <div class="suggestion-item">
-                <span class="username">@mluizasousx</span>
-                <button class="btn btn-follow">Seguir</button>
-            </div>
-        </div>
+      
     </aside>
 
     <div class="feed-content">
@@ -343,13 +409,18 @@ if (empty($me)) {
     </div>
 </main>
 
-<nav class="mobile-nav-bar">
+ <!--
+POSSIVEL CODIGO FUTURO 
+
+<nav class="mobile-nav-bar"> 
+
     <a href="index.php"><i class="fas fa-home"></i></a>
     <a href="explore.php"><i class="fas fa-search"></i></a>
     <a href="notifications.php"><i class="fas fa-bell"></i></a>
     <a href="messages.php"><i class="fas fa-envelope"></i></a>
 </nav>
 
+ -->
 <script>
     // Inicializa o Quill
     const quill = new Quill('#editor', {
@@ -372,6 +443,22 @@ if (empty($me)) {
     form.addEventListener('submit', function(e) {
         document.getElementById('conteudo').value = quill.root.innerHTML;
     });
+    
+document.addEventListener('DOMContentLoaded', () => {
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const navMenu = document.getElementById('nav-menu');
+
+    if (hamburgerBtn && navMenu) {
+        hamburgerBtn.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+
+            const icon = hamburgerBtn.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        });
+    }
+});
+
 </script>
 
 </body>

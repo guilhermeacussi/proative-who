@@ -46,6 +46,28 @@ try {
     $users = [];
     error_log('Erro ao buscar usuários: ' . $e->getMessage());
 }
+
+/**
+ * Retorna o caminho da imagem de perfil de um usuário.
+ *
+ * @param array $user Array com os dados do usuário, precisa ter 'profile_image'.
+ * @return string Caminho da imagem pronta para usar no HTML.
+ */
+function getProfileImage(array $user): string {
+    $default = 'uploads/default.png';
+    
+    // Verifica se existe a coluna e se não é nula
+    if (!empty($user['profile_image'])) {
+        $path = 'uploads/' . $user['profile_image'];
+        // Se o arquivo realmente existe, usa ele
+        if (file_exists($path)) {
+            return $path;
+        }
+    }
+    
+    // Caso contrário, retorna a imagem padrão
+    return $default;
+}
 ?>
 <!doctype html>
 <html lang="pt-BR">
@@ -110,6 +132,16 @@ header.topbar a {
 
 header.topbar a:hover {
   color: #a34de7;
+}
+
+.header-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--accent-color);
+  margin-right: 10px;
+  cursor: pointer;
 }
 
 /* --- SIDEBAR --- */
@@ -385,10 +417,18 @@ header.topbar a:hover {
   color: var(--text-muted);
   font-size: 1.5rem;
   text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
 }
 
 .mobile-nav-bar a.active {
   color: var(--accent-color);
+}
+
+.mobile-nav-bar a span {
+  font-size: 0.8rem;
 }
 
 /* --- RESPONSIVO --- */
@@ -414,6 +454,98 @@ header.topbar a:hover {
   .mobile-nav-bar {
     display: flex;
   }
+
+  /* Melhorias para mobile */
+  .post-interactions {
+    justify-content: space-between; /* Espalha melhor os botões */
+    margin-left: 0; /* Remove margem lateral para telas pequenas */
+    padding: 10px 0;
+  }
+
+  .interaction-btn {
+    font-size: 0.9em; /* Reduz fonte para caber melhor */
+  }
+
+  .question-item {
+    padding: 10px 15px; /* Reduz padding */
+  }
+
+  .post-title {
+    font-size: 1rem; /* Ajusta título */
+  }
+
+  .post-body {
+    font-size: 0.9rem; /* Ajusta corpo */
+  }
+
+  .avatar {
+    width: 40px;
+    height: 40px; /* Reduz avatares */
+  }
+
+  .post-title, .post-body {
+    margin-left: 50px; /* Ajusta margem para avatar menor */
+  }
+
+  .post-interactions {
+    margin-left: 50px; /* Ajusta para avatar menor */
+  }
+
+  .header-avatar {
+    width: 30px;
+    height: 30px; /* Reduz avatar no header para mobile */
+  }
+}
+
+        .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background: #000;
+    color: #fff;
+}
+
+.hamburger-menu {
+    background: none;
+    border: none;
+    font-size: 26px;
+    color: #fff;
+    cursor: pointer;
+    display: none; /* aparece no mobile */
+}
+
+.nav-links {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+    .hamburger-menu {
+        display: block;
+    }
+
+    .nav-links {
+        position: absolute;
+        top: 60px;
+        right: 0;
+        background: #000;
+        flex-direction: column;
+        width: 200px;
+        padding: 15px;
+        display: none;
+    }
+
+    .nav-links.active {
+        display: flex;
+    }
 }
 
     
@@ -423,15 +555,16 @@ header.topbar a:hover {
 <body>
 <header class="topbar">
     <a class="brand" href="index.php">Who?</a>
-    <nav>
-        <?php if (!empty($me)): ?>
-            <a href="ask.php">Fazer pergunta</a> 
-            <a href="profile.php">Meu perfil</a>
-            <a href="/src/actions/logout.php">Sair</a>
-        <?php else: ?>
-            <a href="login.php">Entrar</a>
-            <a href="register.php">Registrar</a>
-        <?php endif; ?>
+
+    <button class="hamburger-menu" id="hamburger-btn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <nav class="nav-links" id="nav-menu">
+        <a href="ask.php">Fazer pergunta</a>
+        <a href="users.php">Descobrir</a>
+        <a href="profile.php">Meu perfil</a>
+        <a href="/src/actions/logout.php">Sair</a>
     </nav>
 </header>
 
@@ -462,34 +595,20 @@ header.topbar a:hover {
                 </div>
             </div>
         </div>
-        
-        <div class="follow-suggestions">
-            <h3>Usuários</h3>
-            <div class="users-list-content">
-                <?php if (!empty($users)): ?>
-                    <?php foreach ($users as $user): ?>
-                        <a href="profile.php?id=<?= htmlspecialchars($user['id']) ?>" class="user-item">
-                            <img src="uploads/avatars/<?= htmlspecialchars($user['avatar'] ?? 'default.png') ?>" 
-                                 alt="Avatar de <?= htmlspecialchars($user['nome']) ?>" 
-                                 class="avatar" onerror="this.src='uploads/avatars/default.png'">
-                            <span class="user-name"><?= htmlspecialchars($user['nome']) ?></span>
-                        </a>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <p style="color: var(--text-muted); padding: 10px 0;">Nenhum usuário encontrado.</p>
-                <?php endif; ?>
-            </div>
+  <div class="follow-suggestions">
+        <h3>Usuários</h3>
+        <div id="users-list" class="users-list-content">
+            <!-- O JS vai preencher esta div com os usuários -->
+            <p style="color: var(--text-muted); padding: 10px 0;">Carregando usuários...</p>
         </div>
-    </aside>
-
+    </div>
+</aside>
     <div class="feed-content">
         <?php if (!empty($me)): ?>
         <section class="post-composer">
             <div class="quick-post-link">
                 <div class="quick-post-inner">
-                    <img src="uploads/avatars/<?= htmlspecialchars($me['avatar'] ?? 'default.png') ?>" 
-                         alt="Foto de perfil de <?= htmlspecialchars($me['username'] ?? 'usuário') ?>" 
-                         class="avatar" onerror="this.src='uploads/avatars/default.png'">
+                    
                     <span class="post-prompt">O que você gostaria de perguntar ou compartilhar? (máx 800 caracteres)</span>
                 </div>
                 <a href="ask.php" class="btn btn-primary btn-compose">Perguntar</a>
@@ -503,8 +622,7 @@ header.topbar a:hover {
             <?php foreach ($questions as $q): ?>
                 <article class="question-item" data-question-id="<?= htmlspecialchars($q['id']) ?>">
                     <div class="post-header">
-                        <img src="uploads/avatars/<?= htmlspecialchars($q['autor_avatar'] ?? 'default.png') ?>" 
-                             alt="Foto de perfil de <?= htmlspecialchars($q['autor']) ?>" 
+                        <img src="uploads/default.png" 
                              class="avatar" onerror="this.src='uploads/avatars/default.png'">
                         <div>
                             <span class="post-author"><?= htmlspecialchars($q['autor']) ?></span>
@@ -542,46 +660,84 @@ header.topbar a:hover {
     </div>
 </main>
 
-<nav class="mobile-nav-bar">
-    <a href="index.php" class="active"><i class="fas fa-home"></i></a>
-    <a href="explore.php"><i class="fas fa-search"></i></a>
-    <a href="notifications.php"><i class="fas fa-bell"></i></a>
-    <a href="messages.php"><i class="fas fa-envelope"></i></a>
-</nav>
 
-<script>
-// Função de likes via AJAX
-document.querySelectorAll('.like-btn').forEach(btn => {
-    btn.addEventListener('click', async () => {
-        if (!<?= json_encode(!empty($me)) ?>) {
-            alert('Você precisa estar logado para curtir.');
+    <script>
+window.isLoggedIn = <?= json_encode(!empty($me)) ?>;
+window.csrfToken = <?= json_encode($_SESSION['csrf_token'] ?? '') ?>;
+
+async function checkImageExists(url) {
+    try {
+        const response = await fetch(url, { method: 'HEAD' });
+        return response.ok;
+    } catch {
+        return false;
+    }
+}
+
+async function loadUsers() {
+    const container = document.getElementById('users-list');
+
+    try {
+        const response = await fetch('src/actions/get-users.php');
+        const users = await response.json();
+
+        if (!users || users.length === 0) {
+            container.innerHTML = '<p style="color: var(--text-muted); padding: 10px 0;">Nenhum usuário encontrado.</p>';
             return;
         }
-        const questionId = btn.closest('.question-item').dataset.questionId;
-        const likeCountSpan = btn.querySelector('.like-count');
-        const icon = btn.querySelector('i');
-        const isLiked = btn.dataset.liked === 'true';
 
-        try {
-            const response = await fetch('src/actions/like.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question_id: questionId, action: isLiked ? 'unlike' : 'like' })
-            });
-            const result = await response.json();
-            if (result.success) {
-                likeCountSpan.textContent = result.new_count;
-                btn.dataset.liked = isLiked ? 'false' : 'true';
-                icon.className = isLiked ? 'far fa-heart' : 'fas fa-heart';
-            } else {
-                alert('Erro: ' + result.message);
-            }
-        } catch (err) {
-            console.error('Erro no like:', err);
-            alert('Erro ao curtir. Tente novamente.');
+        container.innerHTML = '';
+
+        for (const user of users) {
+            const a = document.createElement('a');
+            a.href = `profile.php?id=${user.id}`;
+            a.className = 'user-item';
+
+            const img = document.createElement('img');
+            img.className = 'avatar';
+            img.alt = `Avatar de ${user.nome}`;
+
+            // Verifica se a imagem existe, se não usa default
+            const avatarPath = `uploads/${user.avatar || 'default.png'}`;
+            img.src = await checkImageExists(avatarPath) ? avatarPath : 'uploads/default.png';
+
+            const span = document.createElement('span');
+            span.className = 'user-name';
+            span.textContent = user.nome;
+
+            a.appendChild(img);
+            a.appendChild(span);
+            container.appendChild(a);
         }
-    });
+
+    } catch (error) {
+        console.error('Erro ao carregar usuários:', error);
+        container.innerHTML = '<p style="color: red; padding: 10px 0;">Erro ao carregar usuários.</p>';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadUsers);
+        
+document.addEventListener('DOMContentLoaded', () => {
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const navMenu = document.getElementById('nav-menu');
+
+    if (hamburgerBtn && navMenu) {
+        hamburgerBtn.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+
+            const icon = hamburgerBtn.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        });
+    }
 });
- 
+
+
+</script>
+<script src="js/index.js" defer></script>
+
     
+    <script src="js/index.js"></script>
+    </body>
    </html>

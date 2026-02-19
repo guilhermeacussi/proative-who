@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Descobrir Usuários - Who?</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="users.css"> <link rel="stylesheet" href="css/users.css"> <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* users.css */
+
+/* Reutilização de Variáveis e Container Principal (Apenas para garantir que funcione se for a única folha carregada) */
+/* Recomenda-se que o :root esteja em global.css, mas incluímos aqui para referência rápida */
+:root {
+    --primary-bg: #0e0e0e;
+    --secondary-bg: #1c1c1c;
+    --accent-color: #b96cff;
+    --text-color: #fff;
+    --text-muted: #aaa;
+    --border-color: #2f2f2f;
+    --content-bg: #1a1a1a;
+}
+
+/* --- ESTILOS ESPECÍFICOS DA PÁGINA --- */
+
+/* Cabeçalho da Página */
+.page-header {
+    background-color: var(--secondary-bg);
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.page-header h2 {
+    color: var(--text-color);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.page-header i {
+    color: var(--accent-color);
+    margin-right: 10px;
+}
+
+.subtitle {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+/* Wrapper da Lista */
+.user-list-wrapper {
+    background-color: var(--primary-bg);
+    padding: 0 20px;
+}
+
+/* --- ESTILOS REUTILIZADOS (Copiados do profile.css para completar) --- */
+
+/* Item da Lista de Usuários */
+.user-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0; /* Padding específico para a página de usuários */
+    border-bottom: 1px solid var(--border-color);
+}
+.user-list-item:last-child { 
+    border-bottom: none; 
+}
+
+.user-info-flex { 
+    display: flex; 
+    align-items: center; 
+    /* Permite que os detalhes do usuário fiquem alinhados com o botão */
+    flex-grow: 1; 
+    margin-right: 15px;
+}
+
+.avatar-md {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    margin-right: 15px;
+    border: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.user-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.user-name-list {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 3px;
+}
+.user-handle-list {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.user-bio-preview {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-top: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limita a duas linhas */
+    -webkit-box-orient: vertical;
+    max-width: 100%;
+}
+
+/* Botão de Seguir/Deixar de Seguir */
+.follow-button-list {
+    background-color: var(--accent-color);
+    color: var(--primary-bg);
+    border: none;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    flex-shrink: 0;
+}
+.follow-button-list:hover { 
+    background-color: #a34de7; 
+}
+.follow-button-list.unfollow {
+    background-color: transparent;
+    color: var(--accent-color);
+    border: 1px solid var(--accent-color);
+}
+.follow-button-list.unfollow:hover {
+    background-color: rgba(185, 108, 255, 0.1);
+}
+
+/* --- RESPONSIVIDADE --- */
+@media (max-width: 600px) {
+    .page-header {
+        padding: 15px;
+    }
+    
+    .page-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .user-list-wrapper {
+        padding: 0 10px;
+    }
+
+    .user-list-item {
+        /* Permite que o botão de seguir desça para uma nova linha */
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 15px 0;
+    }
+
+    .user-info-flex {
+        width: 100%;
+    }
+
+    .avatar-md {
+        width: 45px;
+        height: 45px;
+    }
+
+    .follow-button-list {
+        width: 100%; /* Botão ocupa a largura total no mobile */
+        text-align: center;
+    }
+}
+
+    </style>
+</head>
+<body>
+
+<header class="topbar">
+    <a class="brand" href="index.php">Who?</a>
+    
+    <button class="hamburger-menu" id="hamburger-btn">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <nav class="nav-links" id="nav-menu">
+        <?php if ($me): ?>
+            <a href="ask.php">Fazer pergunta</a> 
+            <a href="profile.php">Meu perfil</a> <a href="/src/actions/logout.php">Sair</a>
+        <?php else: ?>
+            <a href="login.html">Entrar</a>
+            <a href="register.html">Registrar</a>
+        <?php endif; ?>
+    </nav>
+</header>
+
+<main class="container">
+    <header class="page-header">
+        <h2><i class="fas fa-compass"></i> Descobrir Usuários</h2>
+        <p class="subtitle">Encontre novas pessoas para seguir e interagir na comunidade Who?</p>
+    </header>
+
+    <div class="user-list-wrapper">
+        
+        <div class="user-list-item user-page-item">
+            <div class="user-info-flex">
+                <img src="path/to/avatar_userA.png" alt="Avatar" class="avatar-md">
+                <div class="user-details">
+                    <span class="user-name-list">Rafaeduardax</span>
+                    <span class="user-handle-list">@rafaeduardax</span>
+                    <p class="user-bio-preview">THIS IS REAL THIS IS ME.</p>
+                </div>
+            </div>
+            <button class="follow-button-list">Seguir</button>
+        </div>
+        
+        <div class="user-list-item user-page-item">
+            <div class="user-info-flex">
+                <img src="path/to/avatar_userB.png" alt="Avatar" class="avatar-md">
+                <div class="user-details">
+                    <span class="user-name-list">Milena</span>
+                    <span class="user-handle-list">@mbtaraes</span>
+                    <p class="user-bio-preview">Cronicamente online.</p>
+                </div>
+            </div>
+            <button class="follow-button-list unfollow">Deixar de Seguir</button>
+        </div>
+        
+        <div class="user-list-item user-page-item">
+            <div class="user-info-flex">
+                <img src="path/to/avatar_userC.png" alt="Avatar" class="avatar-md">
+                <div class="user-details">
+                    <span class="user-name-list">Davi</span>
+                    <span class="user-handle-list">@dvcintra</span>
+                    <p class="user-bio-preview">Sla, eh o Davi.</p>
+                </div>
+            </div>
+            <button class="follow-button-list">Seguir</button>
+        </div>
+        
+        </div>
+</main>
+
+</body>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const navMenu = document.getElementById('nav-menu');
+
+    if (hamburgerBtn && navMenu) {
+        hamburgerBtn.addEventListener('click', () => {
+            // Alterna a classe 'active' no menu de navegação
+            navMenu.classList.toggle('active');
+            
+            // Opcional: Altera o ícone do hamburger (de barras para 'X')
+            const icon = hamburgerBtn.querySelector('i');
+            if (navMenu.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times'); // Ícone de fechar
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars'); // Ícone de abrir
+            }
+        });
+    }
+});
+</script>
+</html>

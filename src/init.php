@@ -1,26 +1,61 @@
 <?php
-session_start();
+// -------------------------------------------------------------
+// Inicia sessão de forma segura
+// -------------------------------------------------------------
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// -------------------------------------------------------------
+// Configuração do banco de dados
+// -------------------------------------------------------------
 $config = require __DIR__ . '/config.php';
-$dsn = "mysql:host={$config['db']['host']};dbname={$config['db']['name']};charset={$config['db']['charset']}";
+
+$dsn = sprintf(
+    'mysql:host=%s;dbname=%s;charset=%s',
+    $config['db']['host'],
+    $config['db']['name'],
+    $config['db']['charset']
+);
+
 try {
-$pdo = new PDO($dsn, $config['db']['user'], $config['db']['pass'], [
-PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-]);
+    $pdo = new PDO($dsn, $config['db']['user'], $config['db']['pass'], [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    ]);
 } catch (PDOException $e) {
-die('DB error: ' . $e->getMessage());
+    die('Erro de conexão com o banco de dados: ' . $e->getMessage());
 }
 
-
-// helper simples para checar login
-function is_logged() {
-return !empty($_SESSION['user_id']);
+// -------------------------------------------------------------
+// Token CSRF (gera se não existir)
+// -------------------------------------------------------------
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
+// -------------------------------------------------------------
+// Funções auxiliares
+// -------------------------------------------------------------
 
-function current_user($pdo) {
-if (!is_logged()) return null;
-$stmt = $pdo->prepare('SELECT id, nome, email, bio, avatar FROM users WHERE id = ?');
-$stmt->execute([$_SESSION['user_id']]);
-return $stmt->fetch();
+/**
+ * Verifica se o usuário está logado.
+ */
+function is_logged(): bool {
+    return !empty($_SESSION['user_id']);
+}
+
+/**
+ * Retorna os dados do usuário logado ou null se não houver.
+ */
+function current_user(PDO $pdo): ?array {
+    if (!is_logged()) {
+        return null;
+    }
+
+    $stmt = $pdo->prepare('SELECT id, nome, email, bio, avatar FROM users WHERE id = ?');
+    $stmt->execute([$_SESSION['user_id']]);
+    $user = $stmt->fetch();
+
+    return $user ?: null;
 }

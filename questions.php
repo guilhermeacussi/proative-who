@@ -503,9 +503,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($me) && isset($_POST['conteu
                 <?php if (!empty($users)): ?>
                     <?php foreach ($users as $user): ?>
                         <a href="profile.php?id=<?= htmlspecialchars($user['id']) ?>" class="user-item">
-                            <img src="uploads/avatars/<?= htmlspecialchars($user['avatar'] ?? 'default.png') ?>" 
-                                 alt="Avatar de <?= htmlspecialchars($user['nome']) ?>" 
-                                 class="avatar" onerror="this.src='uploads/avatars/default.png'">
+                                            <img src="uploads/default.png" 
+                             class="avatar" onerror="this.src='uploads/avatars/default.png'">
                             <span class="user-name"><?= htmlspecialchars($user['nome']) ?></span>
                         </a>
                     <?php endforeach; ?>
@@ -521,9 +520,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($me) && isset($_POST['conteu
         
         <article class="question-detail">
             <div class="post-header">
-                <img src="uploads/avatars/<?= htmlspecialchars($pergunta['autor_avatar'] ?? 'default.png') ?>" 
-                     alt="Foto de perfil de <?= htmlspecialchars($pergunta['autor']) ?>" 
-                     class="avatar" onerror="this.src='uploads/avatars/default.png'">
+
+                                <img src="uploads/default.png" 
+                             class="avatar" onerror="this.src='uploads/avatars/default.png'">
+                
                 <div>
                     <span class="post-author"><?= htmlspecialchars($pergunta['autor']) ?></span>
                     <p class="post-meta">@<?= htmlspecialchars($pergunta['autor']) ?> - <?= htmlspecialchars($pergunta['created_at']) ?></p>
@@ -541,9 +541,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !empty($me) && isset($_POST['conteu
                 <?php foreach ($respostas as $resposta): ?>
                     <div class="response-item">
                         <div class="post-header">
-                            <img src="uploads/avatars/<?= htmlspecialchars($resposta['autor_avatar'] ?? 'default.png') ?>" 
-                                 alt="Foto de perfil de <?= htmlspecialchars($resposta['autor']) ?>" 
-                                 class="avatar" onerror="this.src='uploads/avatars/default.png'">
+
+                                 <img src="uploads/default.png" 
+                             class="avatar" onerror="this.src='uploads/avatars/default.png'">
+                            
                             <div>
                                 <span class="post-author"><?= htmlspecialchars($resposta['autor']) ?></span>
                                 <p class="post-meta">@<?= htmlspecialchars($resposta['autor']) ?> - <?= htmlspecialchars($resposta['created_at']) ?></p>
