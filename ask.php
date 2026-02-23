@@ -2,7 +2,6 @@
 require __DIR__ . '/src/init.php';
 $me = current_user($pdo);
 
-// Verifica se o usuário está logado
 if (empty($me)) {
     header("Location: login.php");
     exit;

@@ -3,7 +3,11 @@
 require __DIR__ . '/src/init.php';
 $me = current_user($pdo);
 
-// Debug: Verifique se há conexão
+if (empty($me)) {
+    header("Location: login.php");
+    exit;
+}
+
 if (!$pdo) {
     die('Erro: Conexão com banco de dados falhou.');
 }
@@ -75,7 +79,6 @@ function getProfileImage(array $user): string {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Home - Who?</title>
-    <link rel="stylesheet" href="css/index.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@100..900&display=swap" rel="stylesheet">
